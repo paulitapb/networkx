@@ -275,3 +275,18 @@ class TestGeneratorInverseLine:
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
+
+    def test_graph_no_edges(self):
+        "Tests graph with no edges to check if the right error is raised"
+        G = nx.Graph()
+        G.add_nodes_from(["p", "a", "u"])
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
+    def test_graph_two_triangles_share_one_edge(self):
+        "Test graph with 2 triangles that only share 1 edge"
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (2, 3), (3, 1), (4, 1), (4, 3)])
+        l = nx.inverse_line_graph(G)
+        L = nx.Graph()
+        L.add_edges_from([(1, 2), (2, 3), (3, 1), (3, 4)])
+        assert nx.is_isomorphic(l, L)
