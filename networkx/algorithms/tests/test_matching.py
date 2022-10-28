@@ -4,7 +4,7 @@ from itertools import permutations
 from pytest import raises
 
 import networkx as nx
-from networkx.algorithms.matching import matching_dict_to_set
+from networkx.algorithms.matching import is_matching, matching_dict_to_set
 from networkx.utils import edges_equal
 
 
@@ -13,6 +13,10 @@ class TestMaxWeightMatching:
     :func:`~networkx.algorithms.matching.max_weight_matching` function.
 
     """
+
+    def test_invalid_input(selp):
+        G = nx.Graph()
+        raises(nx.NetworkXError, nx.min_weight_matching, G, False)
 
     def test_trivial1(self):
         """Empty graph"""
@@ -465,6 +469,11 @@ class TestIsMatching:
         assert nx.is_matching(G, {(0, 1)})
         assert not nx.is_matching(G, {(1, 0)})
 
+    def test_selfloop_detection(self):
+        G = nx.Graph()
+        G.add_node(1)
+        assert not nx.is_matching(G, {(1, 1)})
+
 
 class TestIsMaximalMatching:
     """Unit tests for the
@@ -487,6 +496,21 @@ class TestIsMaximalMatching:
     def test_not_maximal(self):
         G = nx.path_graph(4)
         assert not nx.is_maximal_matching(G, {(0, 1)})
+
+    def test_invalid_input(self):
+        G = nx.path_graph(4)
+        raises(nx.NetworkXError, is_matching, G, {(1, 2, 3)})
+        raises(nx.NetworkXError, is_matching, G, {(1, 7)})
+
+    def test_selfloops(self):
+        G = nx.Graph()
+        G.add_node(0)
+        assert not nx.is_maximal_matching(G, {(0, 0)})
+
+    def test_repeated_edges(self):
+        G = nx.Graph()
+        G.add_node(0)
+        assert not nx.is_maximal_matching(G, {(0, 0), (0, 0)})
 
 
 class TestIsPerfectMatching:
@@ -521,6 +545,21 @@ class TestIsPerfectMatching:
         G.add_edge(1, 4)
 
         assert not nx.is_perfect_matching(G, {(1, 4), (0, 3)})
+
+    def test_invalid_input(self):
+        G = nx.path_graph(4)
+        raises(nx.NetworkXError, nx.is_perfect_matching, G, {(1, 2, 3)})
+        raises(nx.NetworkXError, nx.is_perfect_matching, G, {(1, 7)})
+
+    def test_repeated_edges(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1, 2])
+        assert not nx.is_perfect_matching(G, {(0, 1), (1, 0), (1, 0)})
+
+    def test_selfloops(self):
+        G = nx.Graph()
+        G.add_edges_from([(1, 1), (2, 2)])
+        assert not nx.is_perfect_matching(G, {(1, 1), (2, 2)})
 
 
 class TestMaximalMatching:
@@ -570,3 +609,13 @@ class TestMaximalMatching:
         raises(error, nx.maximal_matching, nx.MultiGraph())
         raises(error, nx.maximal_matching, nx.MultiDiGraph())
         raises(error, nx.maximal_matching, nx.DiGraph())
+
+
+class TestMatchingDicToSet:
+    def test_selfloops(self):
+        matching = {1: 1, 2: 2}
+        raises(nx.NetworkXError, matching_dict_to_set, matching)
+
+    def test_repeated_edges(self):
+        matching = {1: 2, 2: 1, 2: 1}
+        assert matching_dict_to_set(matching) == {(1, 2)}
