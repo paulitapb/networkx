@@ -249,6 +249,12 @@ class TestDAG:
             pytest.raises(RuntimeError, runtime_error2)
             pytest.raises(nx.NetworkXUnfeasible, unfeasible_error)
 
+    def test_topological_sort_invalid_input(self):
+        G = nx.Graph()
+        M = nx.MultiGraph()
+        pytest.raises(nx.NetworkXError, nx.lexicographical_topological_sort, G)
+        pytest.raises(nx.NetworkXError, nx.lexicographical_topological_sort, M)
+
     def test_all_topological_sorts_1(self):
         DG = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 5)])
         assert list(nx.all_topological_sorts(DG)) == [[1, 2, 3, 4, 5]]
@@ -281,6 +287,12 @@ class TestDAG:
         pytest.raises(nx.NetworkXUnfeasible, unfeasible)
         pytest.raises(nx.NetworkXNotImplemented, not_implemented)
         pytest.raises(nx.NetworkXNotImplemented, not_implemted_2)
+
+    def test_all_topological_sort_invalid_input(self):
+        G = nx.Graph()
+        M = nx.MultiGraph()
+        pytest.raises(nx.NetworkXError, nx.all_topological_sorts, G)
+        pytest.raises(nx.NetworkXError, nx.all_topological_sorts, M)
 
     def test_all_topological_sorts_4(self):
         DG = nx.DiGraph()
