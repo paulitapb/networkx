@@ -45,7 +45,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     ------
     NetworkXError
         If `G` is not directed, or
-        If nswap > max_tries, or
+        If `nswap` > `max_tries`, or
         If there are fewer than 4 nodes or 3 edges in `G`.
     NetworkXAlgorithmError
         If the number of swap attempts exceeds `max_tries` before `nswap` swaps are made
@@ -68,11 +68,11 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
            https://math.stackexchange.com/questions/22272/. Accessed 30 May 2022.
     """
     if nswap > max_tries:
-        raise nx.NetworkXError("Number of swaps > number of tries allowed.")
+        raise nx.NetworkXError("Number of swaps > number of tries allowed")
     if len(G) < 4:
-        raise nx.NetworkXError("DiGraph has less than four nodes.")
+        raise nx.NetworkXError("DiGraph has fewer than four nodes")
     if len(G.edges) < 3:
-        raise nx.NetworkXError("DiGraph has less than 3 edges")
+        raise nx.NetworkXError("DiGraph has fewer than 3 edges")
 
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
@@ -176,7 +176,7 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     if nswap > max_tries:
         raise nx.NetworkXError("Number of swaps > number of tries allowed.")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.
@@ -287,7 +287,7 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected")
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
     n = 0
     swapcount = 0
     deg = G.degree()

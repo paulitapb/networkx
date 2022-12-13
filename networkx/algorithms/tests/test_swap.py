@@ -19,9 +19,6 @@ def test_edge_cases_directed_edge_swap():
         "Maximum number of swap attempts \\(11\\) exceeded "
         "before desired swaps achieved \\(\\d\\)."
     )
-    graph = nx.DiGraph([(0, 1), (2, 3)])
-    with pytest.raises(nx.NetworkXAlgorithmError, match=e):
-        nx.directed_edge_swap(graph, nswap=4, max_tries=10, seed=1)
     graph = nx.DiGraph([(0, 0), (0, 1), (1, 0), (2, 3), (3, 2)])
     with pytest.raises(nx.NetworkXAlgorithmError, match=e):
         nx.directed_edge_swap(graph, nswap=1, max_tries=10, seed=1)
@@ -143,10 +140,12 @@ def test_degree_seq_c4():
 def test_no_edges():
     G = nx.DiGraph()
     G.add_nodes_from([0, 1, 2])
-    pytest.raises(nx.NetworkXError, nx.directed_edge_swap, G)
+    with pytest.raises(nx.NetworkXError, match=".*fewer than four nodes"):
+        nx.directed_edge_swap(G)
 
 
 def test_less_than_3_edges():
-    G = nx.DiGraph()
-    G.add_edges_from([(0, 1), (1, 2)])
-    pytest.raises(nx.NetworkXError, nx.directed_edge_swap, G)
+    G = nx.DiGraph([(0, 1), (1, 2)])
+    G.add_nodes_from([3, 4, 5])
+    with pytest.raises(nx.NetworkXError, match=".*fewer than 3 edges"):
+        nx.directed_edge_swap(G)
